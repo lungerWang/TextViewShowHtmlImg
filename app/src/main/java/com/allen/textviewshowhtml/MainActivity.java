@@ -39,11 +39,11 @@ public class MainActivity extends AppCompatActivity {
     class ArtUpdater extends AsyncTask<Void, Void, Void> {
 
         public ArtUpdater(String artAddress, String artImg) {
-            this.artAdresss = artAddress;
+            this.artAddress = artAddress;
             this.artImg = artImg;
         }
 
-        String artAdresss;
+        String artAddress;
         String artImg;
         String htmlContent;
 
@@ -51,9 +51,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             if (htmlContent != null) {
-
+                //图片前加上换行符
                 htmlContent = htmlContent.replace("<img src=\"imgs/", "<br><img src=\"" + artImg);
-
                 htmlContent = htmlContent.replaceAll("<head>([\\s\\S]*)<\\/head>", "");
                 if (htmlContent.contains("><p>")) {
                     String regularExpression1 = "(<[^\\/]\\w><p>)";
@@ -85,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
                             for (Object span : spans) {
                                 if (span instanceof ImageSpan) {
+                                    //跳转查看大图页面
                                     Intent intent = new Intent(MainActivity.this, ShowPicActivity.class);
                                     Bundle bundle = new Bundle();
 
@@ -102,10 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             } catch (Throwable e) {
-                //progressBar.setVisibility(View.GONE);
-                if (e != null) {
-                    e.printStackTrace();
-                }
+                e.printStackTrace();
             }
             super.onPostExecute(result);
         }
@@ -118,14 +115,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                String htmlString = null;
-
-                htmlString = DataUtil.getFromAssets(MainActivity.this, artAdresss);
-
-                htmlContent = htmlString;
+                //获取assets下html文本
+                htmlContent =  DataUtil.getFromAssets(MainActivity.this, artAddress);
 
             } catch (Exception e) {
-                return null;
+                e.printStackTrace();
             }
 
             return null;
